@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.Intrinsics;
+using System.Text;
 
 namespace Semestrovka
 {
@@ -9,68 +11,21 @@ namespace Semestrovka
     {
         static void Main()
         {
-            
-            int n = 1;
-            Point[] array = UniquePoints(Generation.ArraySetPoints(n));
-            PointPrint(array);
-            PointPrint(Greham.ConvexHull(array));
-            Point[] array1 = UniquePoints(Generation.ArraySetPoints(n));
-            PointPrint(Chan.ConvexHull(array1));
-        }
-
-        public static void Print(string[][] str)
-        {
-            foreach (var el in str)
+            string[] data = new string[78];
+            for (int i = 0; i < 78; i++)
             {
-                Console.WriteLine(String.Join(" ",el));
+                var time1 = new Stopwatch();
+                StringBuilder sb = new StringBuilder();
+                time1.Start();
+                Point[] array1 = Tools.UniquePoints(Generation.ArraySetPoints(i+1));
+                int count = array1.Length;
+                ConvexHull.Chan(array1);
+                time1.Stop();
+                sb.Append(count + " " + time1.Elapsed.TotalSeconds + " " + Counter.Count);
+                Counter.Count = 0;
+                data[i] = sb.ToString();
             }
-        }
-
-        public static void PointPrint(Point[] array)
-        {
-            Console.WriteLine();
-            foreach (var el in array)
-            {
-                Console.Write(el.ToString());
-            }
-            Console.WriteLine();
-        }
-
-        public static Point[] UniquePoints(Point[] array)
-        {
-            Couple[] library = new Couple[0];
-            for (int i = 0; i < array.Length; i++)
-            {
-                int count = 0;
-                foreach (var el in library)
-                    if (array[i].X == el.Inf.X && array[i].Y == el.Inf.Y)
-                    {
-                        el.Count += 1;
-                        count += 1;
-                        break;
-                    }
-                if (count == 0)
-                    library = library.Append(new Couple(array[i])).ToArray();
-            }
-
-            Point[] result = new Point[0];
-            foreach (var couple in library)
-            {
-                result = result.Append(couple.Inf).ToArray();
-            }
-
-            return result;
+            File.WriteAllLines(@"C:\SomeDir2\result.txt",data);
         }
     }
-    public class Couple
-    {
-        public Point Inf;
-        public int Count;
-        public Couple(Point inf)
-        {
-            Inf = inf;
-            Count = 1;
-        }
-    }
-
 }
